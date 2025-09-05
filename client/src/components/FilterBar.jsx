@@ -1,4 +1,4 @@
-import { FiSearch } from "react-icons/fi"; // feather search icon
+import { FiSearch } from "react-icons/fi"; 
 export default function FilterBar({
   tags,
   countries,

@@ -146,18 +146,16 @@ export default function Home() {
     nav(`/results?${params.toString()}`);
   }
 
-  // Compute transform classes for each layer based on who is front and whether we're sliding.
-  // We avoid dynamic Tailwind duration tokens to keep production builds happy; set duration via inline style.
+ 
   const aTransform =
     state.frontIsA
-      ? (state.sliding ? '-translate-x-full' : 'translate-x-0')   // A is front: slide it out when sliding
-      : (state.sliding ? 'translate-x-0'    : 'translate-x-full'); // A is back: slide it in when sliding, else park right
+      ? (state.sliding ? '-translate-x-full' : 'translate-x-0')   
+      : (state.sliding ? 'translate-x-0'    : 'translate-x-full');
 
   const bTransform =
     state.frontIsA
-      ? (state.sliding ? 'translate-x-0'    : 'translate-x-full')  // B is back: slide it in when sliding, else park right
-      : (state.sliding ? '-translate-x-full' : 'translate-x-0');   // B is front: slide it out when sliding
-
+      ? (state.sliding ? 'translate-x-0'    : 'translate-x-full')  
+      : (state.sliding ? '-translate-x-full' : 'translate-x-0');   
   return (
     <section className="relative min-h-screen flex flex-col justify-center overflow-hidden">
       {/* Background Carousel (double-buffered sliding) */}
@@ -177,15 +175,13 @@ export default function Home() {
           style={{
             backgroundImage: `url(${images[state.iB]})`,
             transitionProperty: 'transform',
-            transitionDuration: `${DURATION_MS}ms`
           }}
         />
       </div>
 
       {/* Gradient overlay */}
       <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/45 via-black/30 to-black/20" />
-
-      {/* Content (unchanged) */}
+      {/* Content */}
       <div className="relative z-20 mx-auto max-w-[var(--page-max)] px-4 pt-20 pb-8 flex flex-col items-center">
         <div className="text-center mb-6 text-white drop-shadow">
           <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight">
