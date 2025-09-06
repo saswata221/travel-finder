@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { api } from '../services/http';
-import { AiFillStar } from 'react-icons/ai'; // stars for seasonality
+import { AiFillStar } from 'react-icons/ai'; 
 
 export default function Destination() {
   const { id } = useParams();
@@ -32,9 +32,9 @@ export default function Destination() {
 
   return (
     <PageShell>
-      {/* Media row: images (left) + map (right) */}
+      
       <section className="grid md:grid-cols-3 gap-4">
-        {/* Images column (relative so we can place the title at its bottom) */}
+      
         <div className={hasImages ? "md:col-span-2 space-y-4 relative" : "md:col-span-3 relative"}>
           {hasImages ? (
             <div className="grid sm:grid-cols-2 gap-4">
@@ -51,8 +51,7 @@ export default function Destination() {
             <div className="rounded-xl w-full h-56 ring-1 ring-slate-700 bg-slate-800/60" />
           )}
 
-          {/* Title raised up so its bottom matches the map bottom */}
-          {/* Add bottom padding space so absolute header doesn't overlap later sections */}
+         
           <div className="pb-8" />
           <header className="absolute bottom-0 left-0">
             <h1 className="text-3xl font-extrabold tracking-tight text-white">{data.name}</h1>
@@ -60,7 +59,7 @@ export default function Destination() {
           </header>
         </div>
 
-        {/* Map column (unchanged) */}
+
         <div className={hasImages ? "md:col-span-1" : "md:col-span-3"}>
           <div className="h-full min-h-[22rem] rounded-xl overflow-hidden ring-1 ring-slate-700 bg-slate-900/60">
             <iframe
@@ -105,7 +104,7 @@ export default function Destination() {
         </section>
       )}
 
-      {/* Seasonality (glassy + stars) */}
+      {/* Seasonality  */}
       {data.seasonality?.length > 0 && (
         <section className="bg-slate-800/60 backdrop-blur-md rounded-2xl p-5 ring-1 ring-slate-700">
           <h3 className="font-semibold mb-2 text-slate-200">Seasonality</h3>
@@ -137,7 +136,6 @@ export default function Destination() {
   );
 }
 
-/* ---------- helpers ---------- */
 
 function PageShell({ children }) {
   return (
