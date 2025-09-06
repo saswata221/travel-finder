@@ -1,10 +1,10 @@
-// client/src/pages/Home.jsx
+
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/http';
 import FilterBar from '../components/FilterBar';
 
-// Import multiple background images
+
 import hero1 from '../assets/hero1.jpg';
 import hero2 from '../assets/hero2.jpg';
 import hero3 from '../assets/hero3.jpg';
@@ -14,7 +14,7 @@ import hero6 from '../assets/hero6.jpg';
 import hero7 from '../assets/hero7.jpg';
 import hero8 from '../assets/hero8.jpg';
 export default function Home() {
-  // data from API
+
   const [tags, setTags] = useState([]);
   const [countries, setCountries] = useState([]);
 
@@ -30,73 +30,63 @@ export default function Home() {
   // --- Background Carousel (double-buffered, glitch-free) ---
   const images = [hero1, hero2, hero3, hero4, hero5,hero6,hero7,hero8];
 
-  // We render TWO layers (A and B). Only one is "front" at a time.
-  // During a slide, the back layer moves in; after it finishes, we swap roles
-  // and pre-load the next image into the new back layer.
-  const CYCLE_MS = 3000;    // total cycle per image
-  const DURATION_MS = 900;  // slide duration (ms)
+
+  const CYCLE_MS = 3000;    
+  const DURATION_MS = 900;  
 
   const [state, setState] = useState({
-    iA: 0,            // image index shown by Layer A
-    iB: 1,            // image index shown by Layer B
-    frontIsA: true,   // which layer is in front (on screen) when NOT sliding
-    sliding: false    // are we currently animating the slide?
+    iA: 0,            
+    iB: 1,            
+    frontIsA: true,   
+    sliding: false    
   });
 
-  // Prefetch to avoid flicker
+
   useEffect(() => {
     images.forEach(src => {
       const img = new Image();
       img.src = src;
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   }, []);
 
-  // Main scheduler: every CYCLE_MS start a slide that lasts DURATION_MS
+  
   useEffect(() => {
     let intervalId;
     let finishId;
 
     const startSlide = () => {
-      // Start animation
+      
       setState(s => ({ ...s, sliding: true }));
 
-      // Finish slide after DURATION_MS: swap roles and prepare next image
+      
       finishId = setTimeout(() => {
         setState(s => {
-          // The "incoming" image during slide is the back layer:
+          
           const incomingIndex = s.frontIsA ? s.iB : s.iA;
 
-          // After slide, the incoming becomes the front.
+   
           const newFrontIsA = !s.frontIsA;
 
-          // Preload the next image for the new back layer:
           const nextIndex = (incomingIndex + 1) % images.length;
 
           if (newFrontIsA) {
-            // A becomes front showing 'incomingIndex', B becomes back with 'nextIndex'
             return { iA: incomingIndex, iB: nextIndex, frontIsA: true, sliding: false };
           } else {
-            // B becomes front showing 'incomingIndex', A becomes back with 'nextIndex'
             return { iA: nextIndex, iB: incomingIndex, frontIsA: false, sliding: false };
           }
         });
       }, DURATION_MS);
     };
 
-    // Kick off and repeat every CYCLE_MS
     intervalId = setInterval(startSlide, CYCLE_MS);
-    // also start immediately so the first transition happens after the initial rest
-    // If you want an initial rest, comment the next line.
-    // startSlide();
-
     return () => {
       clearInterval(intervalId);
       clearTimeout(finishId);
     };
   }, [images.length]);
 
-  // fetch filter data (unchanged)
+  
   useEffect(() => {
     api('/api/tags')
       .then(rows => {
@@ -128,7 +118,7 @@ export default function Home() {
     const cur = new Date(s);
     cur.setDate(1);
     while (cur <= e) {
-      months.add(cur.getMonth() + 1); // 1..12
+      months.add(cur.getMonth() + 1);
       cur.setMonth(cur.getMonth() + 1);
     }
     return Array.from(months).join(',');
@@ -158,7 +148,7 @@ export default function Home() {
       : (state.sliding ? '-translate-x-full' : 'translate-x-0');   
   return (
     <section className="relative min-h-screen flex flex-col justify-center overflow-hidden">
-      {/* Background Carousel (double-buffered sliding) */}
+      
       <div className="absolute inset-0 overflow-hidden">
         {/* Layer A */}
         <div
