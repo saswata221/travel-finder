@@ -27,7 +27,7 @@ export default function DestinationCard({ d }) {
             </span>
           </div>
 
-          {/* Country (brighter for visibility) */}
+          {/* Country  */}
           <p className="text-md font-medium text-[#80ed99] mt-1">{d.country}</p>
 
           {/* Description */}
