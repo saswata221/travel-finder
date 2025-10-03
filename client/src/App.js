@@ -32,7 +32,6 @@ export default function App() {
                 Home
               </NavLink>
 
-              {/* Changed to button to open the About box; classes kept the same */}
               <button
                 type="button"
                 onClick={() => setAboutOpen(true)}
@@ -45,7 +44,6 @@ export default function App() {
         </div>
       </header>
 
-      {/* push content below fixed header */}
       <main className="relative ">
         <Outlet />
       </main>

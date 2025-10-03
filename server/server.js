@@ -8,11 +8,11 @@ import cors from "cors";
 const app = express();
 app.use(express.json());
 
-// Allowed origins: Vercel (from env) + local dev
+
 const ALLOWED = [
-  process.env.CORS_ORIGIN, // e.g. https://yourapp.vercel.app
-  "http://localhost:5173", // Vite dev (if you ever switch)
-  "http://localhost:3000", // CRA dev
+  process.env.CORS_ORIGIN, 
+  "http://localhost:5173", 
+  "http://localhost:3000", 
 ].filter(Boolean);
 
 app.use(cors({ origin: ALLOWED, credentials: true }));
@@ -30,4 +30,4 @@ app.use("/api/destinations", destinationsRoutes);
 app.get("/health", (_req, res) => res.json({ status: "ok" }));
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`✅ API running on :${PORT}`));
+app.listen(PORT, () => console.log(`API running on :${PORT}`));

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { FiX } from "react-icons/fi";
 
 export default function AboutModal({ open, onClose }) {
-  // Close on ESC
+  
   useEffect(() => {
     if (!open) return;
     const onKey = (e) => e.key === "Escape" && onClose();
@@ -15,7 +15,7 @@ export default function AboutModal({ open, onClose }) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center"
-      onClick={onClose} // click outside closes
+      onClick={onClose} 
     >
       {/* Backdrop */}
       <div className="absolute inset-0  backdrop-blur-sm" />
@@ -23,7 +23,7 @@ export default function AboutModal({ open, onClose }) {
       {/* Card */}
       <div
         className="relative mx-4 max-w-lg w-full rounded-3xl p-6 bg-black/50 backdrop-blur-xl ring-1 ring-white/20 text-slate-100"
-        onClick={(e) => e.stopPropagation()} // keep clicks inside from closing
+        onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
