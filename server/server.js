@@ -8,11 +8,10 @@ import cors from "cors";
 const app = express();
 app.use(express.json());
 
-
 const ALLOWED = [
-  process.env.CORS_ORIGIN, 
-  "http://localhost:5173", 
-  "http://localhost:3000", 
+  process.env.CORS_ORIGIN,
+  "http://localhost:5173",
+  "http://localhost:3000",
 ].filter(Boolean);
 
 app.use(cors({ origin: ALLOWED, credentials: true }));

@@ -66,57 +66,57 @@ export async function searchDestinationsModel({
 }
 
 /** Full details */
-export async function getDestinationById(id) {
-  const base = await pool.query(
-    `
-    SELECT d.*, c.name AS country
-    FROM destinations d
-    JOIN countries c ON c.id = d.country_id
-    WHERE d.id = $1
-  `,
-    [id]
-  );
+// export async function getDestinationById(id) {
+//   const base = await pool.query(
+//     `
+//     SELECT d.*, c.name AS country
+//     FROM destinations d
+//     JOIN countries c ON c.id = d.country_id
+//     WHERE d.id = $1
+//   `,
+//     [id]
+//   );
 
-  if (!base.rows[0]) return null;
+//   if (!base.rows[0]) return null;
 
-  const tags = await pool.query(
-    `
-    SELECT t.id, t.name
-    FROM destination_tags dt
-    JOIN tags t ON t.id = dt.tag_id
-    WHERE dt.destination_id = $1
-    ORDER BY t.name
-  `,
-    [id]
-  );
+//   const tags = await pool.query(
+//     `
+//     SELECT t.id, t.name
+//     FROM destination_tags dt
+//     JOIN tags t ON t.id = dt.tag_id
+//     WHERE dt.destination_id = $1
+//     ORDER BY t.name
+//   `,
+//     [id]
+//   );
 
-  const images = await pool.query(
-    `
-    SELECT image_url, is_cover
-    FROM destination_images
-    WHERE destination_id = $1
-    ORDER BY is_cover DESC, id ASC
-  `,
-    [id]
-  );
+//   const images = await pool.query(
+//     `
+//     SELECT image_url, is_cover
+//     FROM destination_images
+//     WHERE destination_id = $1
+//     ORDER BY is_cover DESC, id ASC
+//   `,
+//     [id]
+//   );
 
-  const seasonality = await pool.query(
-    `
-    SELECT month, suitability
-    FROM seasonality
-    WHERE destination_id = $1
-    ORDER BY month
-  `,
-    [id]
-  );
+//   const seasonality = await pool.query(
+//     `
+//     SELECT month, suitability
+//     FROM seasonality
+//     WHERE destination_id = $1
+//     ORDER BY month
+//   `,
+//     [id]
+//   );
 
-  return {
-    ...base.rows[0],
-    tags: tags.rows,
-    images: images.rows,
-    seasonality: seasonality.rows,
-  };
-}
+//   return {
+//     ...base.rows[0],
+//     tags: tags.rows,
+//     images: images.rows,
+//     seasonality: seasonality.rows,
+//   };
+// }
 
 export async function getDestinationById(id) {
   const base = await pool.query(
