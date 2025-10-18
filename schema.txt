@@ -1,0 +1,73 @@
+-- Travel Database Schema
+-- PostgreSQL 16
+
+-- Drop tables if exist (for clean import)
+DROP TABLE IF EXISTS destination_tags CASCADE;
+DROP TABLE IF EXISTS destination_images CASCADE;
+DROP TABLE IF EXISTS destination_messages CASCADE;
+DROP TABLE IF EXISTS seasonality CASCADE;
+DROP TABLE IF EXISTS destinations CASCADE;
+DROP TABLE IF EXISTS countries CASCADE;
+DROP TABLE IF EXISTS tags CASCADE;
+
+-- Create tables
+CREATE TABLE countries (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    iso_code CHAR(2) NOT NULL UNIQUE,
+    region TEXT NOT NULL
+);
+
+CREATE TABLE destinations (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    country_id INTEGER NOT NULL REFERENCES countries(id) ON DELETE CASCADE,
+    short_description TEXT,
+    about TEXT,
+    latitude NUMERIC(9,6),
+    longitude NUMERIC(9,6),
+    safety_score NUMERIC(2,1),
+    avg_daily_cost INTEGER,
+    visa_type TEXT,
+    popularity_score NUMERIC(3,1)
+);
+
+CREATE TABLE destination_images (
+    id SERIAL PRIMARY KEY,
+    destination_id INTEGER NOT NULL REFERENCES destinations(id) ON DELETE CASCADE,
+    image_url TEXT,
+    is_cover BOOLEAN DEFAULT false
+);
+
+CREATE TABLE destination_messages (
+    id SERIAL PRIMARY KEY,
+    destination_id INTEGER NOT NULL REFERENCES destinations(id) ON DELETE CASCADE,
+    rating INTEGER CHECK (rating >= 1 AND rating <= 5),
+    message_template TEXT NOT NULL
+);
+
+CREATE TABLE tags (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL UNIQUE
+);
+
+CREATE TABLE destination_tags (
+    destination_id INTEGER NOT NULL REFERENCES destinations(id) ON DELETE CASCADE,
+    tag_id INTEGER NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
+    PRIMARY KEY (destination_id, tag_id)
+);
+
+CREATE TABLE seasonality (
+    destination_id INTEGER NOT NULL REFERENCES destinations(id) ON DELETE CASCADE,
+    month INTEGER NOT NULL CHECK (month >= 1 AND month <= 12),
+    suitability SMALLINT NOT NULL CHECK (suitability >= 1 AND suitability <= 5),
+    PRIMARY KEY (destination_id, month)
+);
+
+-- Create indexes for better query performance
+CREATE INDEX idx_destinations_country ON destinations(country_id);
+CREATE INDEX idx_destination_images_dest ON destination_images(destination_id);
+CREATE INDEX idx_destination_messages_dest ON destination_messages(destination_id);
+CREATE INDEX idx_destination_tags_dest ON destination_tags(destination_id);
+CREATE INDEX idx_destination_tags_tag ON destination_tags(tag_id);
+CREATE INDEX idx_seasonality_dest ON seasonality(destination_id);

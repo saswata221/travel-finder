@@ -14,7 +14,27 @@ const ALLOWED = [
   "http://localhost:3000",
 ].filter(Boolean);
 
-app.use(cors({ origin: ALLOWED, credentials: true }));
+// Allow all Vercel preview deployments
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+
+    // Allow localhost
+    if (origin.includes("localhost")) return callback(null, true);
+
+    // Allow all Vercel deployments
+    if (origin.includes("vercel.app")) return callback(null, true);
+
+    // Allow specific origins from ALLOWED array
+    if (ALLOWED.indexOf(origin) !== -1) return callback(null, true);
+
+    callback(new Error("Not allowed by CORS"));
+  },
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 // routes
 import tagsRoutes from "./src/routes/tagsRoutes.js";
