@@ -65,59 +65,6 @@ export async function searchDestinationsModel({
   return rows;
 }
 
-/** Full details */
-// export async function getDestinationById(id) {
-//   const base = await pool.query(
-//     `
-//     SELECT d.*, c.name AS country
-//     FROM destinations d
-//     JOIN countries c ON c.id = d.country_id
-//     WHERE d.id = $1
-//   `,
-//     [id]
-//   );
-
-//   if (!base.rows[0]) return null;
-
-//   const tags = await pool.query(
-//     `
-//     SELECT t.id, t.name
-//     FROM destination_tags dt
-//     JOIN tags t ON t.id = dt.tag_id
-//     WHERE dt.destination_id = $1
-//     ORDER BY t.name
-//   `,
-//     [id]
-//   );
-
-//   const images = await pool.query(
-//     `
-//     SELECT image_url, is_cover
-//     FROM destination_images
-//     WHERE destination_id = $1
-//     ORDER BY is_cover DESC, id ASC
-//   `,
-//     [id]
-//   );
-
-//   const seasonality = await pool.query(
-//     `
-//     SELECT month, suitability
-//     FROM seasonality
-//     WHERE destination_id = $1
-//     ORDER BY month
-//   `,
-//     [id]
-//   );
-
-//   return {
-//     ...base.rows[0],
-//     tags: tags.rows,
-//     images: images.rows,
-//     seasonality: seasonality.rows,
-//   };
-// }
-
 export async function getDestinationById(id) {
   const base = await pool.query(
     `
@@ -161,28 +108,10 @@ export async function getDestinationById(id) {
     [id]
   );
 
-  // NEW: messages (one per rating) and best seasons text
-  const messages = await pool.query(
-    `
-    SELECT rating, message_template
-    FROM destination_messages
-    WHERE destination_id = $1
-    ORDER BY rating DESC
-    `,
-    [id]
-  );
-
-  const bestSeasons = await pool.query(
-    `SELECT best_seasons_text($1) AS best_seasons`,
-    [id]
-  );
-
   return {
     ...base.rows[0],
     tags: tags.rows,
     images: images.rows,
     seasonality: seasonality.rows,
-    messages: messages.rows, // [{rating, message_template}]
-    best_seasons: bestSeasons.rows[0]?.best_seasons, // e.g., "Dec, Jan, Feb" | null
   };
 }

@@ -28,6 +28,50 @@ function monthsFromRange(start, end) {
   return months;
 }
 
+// short 3-letter month name (for seasonality grid)
+function monthName(m) {
+  return [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ][m - 1];
+}
+
+// full month name (for notifier)
+function monthFullName(m) {
+  return [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ][m - 1];
+}
+
+// Convert array of month-names -> human friendly phrase
+function monthsArrayToText(monthNames) {
+  if (!monthNames || !monthNames.length) return "";
+  if (monthNames.length === 1) return monthNames[0]; // "December"
+  if (monthNames.length === 2) return `${monthNames[0]} & ${monthNames[1]}`; // "Apr & May"
+  return `${monthNames.slice(0, -1).join(", ")} & ${monthNames.slice(-1)}`; // "Apr, May & Jun"
+}
+
 export default function Destination() {
   const { id } = useParams();
   const q = useQuery();
@@ -75,7 +119,7 @@ export default function Destination() {
   const mapsSrc = buildMapEmbedSrc(data);
 
   // ----- Compute rating from selected dates (if any) -----
-  const selectedMonths = monthsFromRange(q.start, q.end);
+  const selectedMonths = monthsFromRange(q.start, q.end); // array of month numbers 1..12
   const monthToScore = new Map(
     (data.seasonality || []).map((s) => [s.month, s.suitability])
   );
@@ -86,21 +130,92 @@ export default function Destination() {
     ? Math.max(...selectedScores)
     : undefined;
 
-  // ----- Resolve message template for rating and inject placeholders -----
-  const templateFor = (r) =>
-    (data.messages || []).find((x) => x.rating === r)?.message_template;
-  const bestSeasons = data.best_seasons || "";
-  const inject = (tpl) =>
-    (tpl || "")
-      .replaceAll("{name}", data.name || "")
-      .replaceAll("{best_seasons}", bestSeasons || "");
+  // ----- Best months overall (suitability >= 4) -----
+  const bestMonthsArray = (data.seasonality || [])
+    .filter((s) => Number.isInteger(s.suitability) && s.suitability >= 4)
+    .map((s) => Number(s.month));
 
-  const finalMessage = computedRating
-    ? inject(templateFor(computedRating)) || `Happy journey to ${data.name}!`
-    : "Happy journey";
+  const bestMonthsFullNames = bestMonthsArray.map((m) => monthFullName(m));
+  const bestMonthsText = monthsArrayToText(bestMonthsFullNames);
+
+  // ----- Selected months text (for messages when user picked dates) -----
+  const selectedMonthsFullNames = (selectedMonths || []).map((m) =>
+    monthFullName(m)
+  );
+  const selectedMonthsText = monthsArrayToText(selectedMonthsFullNames);
+
+  // ----- Message templates (functions for better grammar) -----
+  // Each template receives (monthsText) which may be single month or multi-month phrase
+  const ratingTemplates = {
+    5: (monthsText) => {
+      const isSingle =
+        monthsText && !monthsText.includes(",") && !monthsText.includes("&");
+      return `🏆 Perfect time — ${monthsText || data.name} ${
+        isSingle ? "is" : "are"
+      } the best time to visit ${
+        data.name
+      }. Expect brilliant weather — pack sunscreen & your camera 📸.`;
+    },
+    4: (monthsText) => {
+      const isSingle =
+        monthsText && !monthsText.includes(",") && !monthsText.includes("&");
+      return `🌟 Great time — ${monthsText || data.name} ${
+        isSingle ? "is" : "are"
+      } an excellent time to visit ${data.name}. Mostly pleasant conditions.`;
+    },
+    3: (monthsText) => {
+      return `👍 Good — ${monthsText || "these months"} can work for visiting ${
+        data.name
+      }; expect mixed conditions — pack layers.`;
+    },
+    2: (monthsText) => {
+      return `⚠️ Caution — ${
+        monthsText || "these months"
+      } are somewhat suitable for ${data.name}; prepare for variable weather.`;
+    },
+    1: (monthsText) => {
+      const isSingle =
+        monthsText && !monthsText.includes(",") && !monthsText.includes("&");
+      return `❗ Not recommended — ${monthsText || data.name} ${
+        isSingle ? "is" : "are"
+      } usually not ideal for visiting ${data.name}. Consider other dates.`;
+    },
+  };
+
+  // ----- Final message selection -----
+  // If user selected dates -> use selectedMonthsText in message (mentions selected months)
+  // Else -> fallback to bestMonthsText (global best months) in tip
+  let finalMessage = `🌍 Explore ${data.name} — select dates to get tailored advice.`;
+  if (computedRating && ratingTemplates[computedRating]) {
+    // user selected dates & we computed rating for those selected months
+    const monthsToMention =
+      selectedMonths && selectedMonths.length
+        ? selectedMonthsText
+        : bestMonthsText;
+    finalMessage = ratingTemplates[computedRating](monthsToMention);
+  } else if (selectedMonths.length && !computedRating) {
+    // selected months exist but no seasonality data for them
+    finalMessage = `ℹ️ No seasonality data available for the selected dates. Enjoy your trip to ${data.name}!`;
+  } else {
+    // no dates selected -> show a tip about global best months if available
+    if (bestMonthsText) {
+      finalMessage = `💡 Tip: ${bestMonthsText} ${
+        bestMonthsFullNames.length === 1 ? "is" : "are"
+      } usually a great time to visit ${data.name}.`;
+    } else {
+      finalMessage = `🌍 Explore ${data.name} — select dates to get tailored advice.`;
+    }
+  }
 
   return (
     <PageShell>
+      {/* show notifier top-right, auto-open */}
+      <RobotNotifier
+        message={finalMessage}
+        initialOpen={true}
+        position="top-right"
+      />
+
       {/* Media row: images (left) + map (right) */}
       <section className="grid md:grid-cols-3 gap-4">
         {/* Images column */}
@@ -223,14 +338,11 @@ export default function Destination() {
           </div>
         </section>
       )}
-
-      {/* Sticky robot notifier */}
-      <RobotNotifier message={finalMessage} />
     </PageShell>
   );
 }
 
-/* ---------- helpers ---------- */
+/* ---------- helpers & components ---------- */
 
 function PageShell({ children }) {
   return (
@@ -249,23 +361,6 @@ function Info({ label, value }) {
       <div className="font-semibold text-lg text-white">{value}</div>
     </div>
   );
-}
-
-function monthName(m) {
-  return [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ][m - 1];
 }
 
 function seasonGlassColor(score) {
