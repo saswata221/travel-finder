@@ -5,15 +5,13 @@ export default function DestinationCard({ d }) {
   const loc = useLocation();
   const search = loc.search || "";
 
-  // parse start/end from the current location's querystring if present
   const params = new URLSearchParams(search);
   const start = params.get("start") || "";
   const end = params.get("end") || "";
 
-  // compute start month (1..12) if start is a valid YYYY-MM-DD, otherwise empty
   let startMonth = "";
   if (start) {
-    const m = Number(start.split("-")[1]); // "YYYY-MM-DD" -> MM
+    const m = Number(start.split("-")[1]);
     if (!Number.isNaN(m) && m >= 1 && m <= 12) startMonth = String(m);
   }
 
@@ -23,7 +21,6 @@ export default function DestinationCard({ d }) {
     <div className="rounded-3xl p-[2px] bg-gradient-to-br from-fuchsia-500 via-cyan-500 to-emerald-500 shadow-lg hover:shadow-2xl transition">
       <Link
         to={to}
-        // data attributes added so Destination page can read them directly if desired
         data-start={start}
         data-end={end}
         data-start-month={startMonth}

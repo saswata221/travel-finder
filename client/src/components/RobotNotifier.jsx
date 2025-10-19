@@ -1,4 +1,3 @@
-// client/src/components/RobotNotifier.jsx
 import { useEffect, useState } from "react";
 import { FaRobot } from "react-icons/fa";
 
@@ -18,11 +17,11 @@ export default function RobotNotifier({
 
       const hideTimer = setTimeout(() => {
         setOpen(false);
-      }, 7000); // auto-hide after 7 sec
+      }, 5000); // auto-hide after 5 sec
 
       const stopAnimate = setTimeout(() => {
-        setAnimate(false); // stop bouncing/slide after entrance
-      }, 700); // animation duration
+        setAnimate(false); // stop bounce after entrance
+      }, 700); // matches animation duration
 
       return () => {
         clearTimeout(hideTimer);

@@ -1,4 +1,5 @@
 import { FiSearch } from "react-icons/fi";
+
 export default function FilterBar({
   tags,
   countries,
@@ -35,12 +36,12 @@ export default function FilterBar({
                 key={t.id}
                 onClick={() => toggleTag(t.id)}
                 className={`px-3 py-1.5 rounded-full text-sm font-medium transition
-    ${
-      active
-        ? "text-white bg-sky-600 shadow-sm hover:bg-sky-700"
-        : "bg-white/30 backdrop-blur-sm text-slate-800 ring-1 ring-slate-200 hover:bg-white/50"
-    }
-  `}
+                  ${
+                    active
+                      ? "text-white bg-sky-600 shadow-sm hover:bg-sky-700"
+                      : "bg-white/30 backdrop-blur-sm text-slate-800 ring-1 ring-slate-200 hover:bg-white/50"
+                  }
+                `}
               >
                 {t.name}
               </button>
@@ -54,7 +55,7 @@ export default function FilterBar({
 
       {/* Country */}
       <div className="p-4 rounded-2xl bg-white/70 ring-1 ring-white/60">
-        <h3 className="font-semibold mb-3  text-blue-700">Country</h3>
+        <h3 className="font-semibold mb-3 text-blue-700">Country</h3>
         <select
           value={countryId}
           onChange={(e) => setCountryId(e.target.value)}
@@ -81,10 +82,9 @@ export default function FilterBar({
         />
       </div>
 
-      {/* Dates */}
-      {/* Dates */}
-      <div className="p-4 rounded-2xl bg-white/70 ring-1 ring-white/60 md:col-span-3">
-        <h3 className="font-semibold mb-3 text-blue-700">Travel dates</h3>
+      {/* Travel Dates */}
+      <div className="p-4 rounded-2xl bg-gradient-to-r from-blue-50 via-sky-50 to-indigo-50 ring-1 ring-white/60 md:col-span-3">
+        <h3 className="font-semibold mb-3 text-blue-700">Travel Dates</h3>
         <div className="grid gap-4 md:grid-cols-2">
           {(() => {
             const today = new Date().toISOString().split("T")[0];
@@ -92,33 +92,35 @@ export default function FilterBar({
               <>
                 {/* Start Date */}
                 <div className="flex flex-col gap-1">
-                  <label className="text-sm text-slate-700">Start date</label>
+                  <label className="text-sm text-slate-700 font-semibold">
+                    Start Date
+                  </label>
                   <input
                     type="date"
                     value={startDate}
                     min={today}
                     onChange={(e) => setStartDate(e.target.value)}
-                    className="border rounded-lg px-3 py-2 bg-white/90
-                         focus:outline-none focus:ring-2 focus:ring-sky-400
-                         text-slate-800 transition hover:shadow-sm
-                         appearance-none [&::-webkit-calendar-picker-indicator]:opacity-70
-                         [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                    className="w-full rounded-xl border-2 border-sky-300 bg-white px-4 py-2 text-slate-800 shadow-sm
+                               focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-500
+                               transition duration-200 ease-in-out hover:shadow-md
+                               appearance-none [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-90"
                   />
                 </div>
 
                 {/* End Date */}
                 <div className="flex flex-col gap-1">
-                  <label className="text-sm text-slate-700">End date</label>
+                  <label className="text-sm text-slate-700 font-semibold">
+                    End Date
+                  </label>
                   <input
                     type="date"
                     value={endDate}
                     min={startDate || today}
                     onChange={(e) => setEndDate(e.target.value)}
-                    className="border rounded-lg px-3 py-2 bg-white/90
-                         focus:outline-none focus:ring-2 focus:ring-sky-400
-                         text-slate-800 transition hover:shadow-sm
-                         appearance-none [&::-webkit-calendar-picker-indicator]:opacity-70
-                         [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                    className="w-full rounded-xl border-2 border-indigo-300 bg-white px-4 py-2 text-slate-800 shadow-sm
+                               focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-500
+                               transition duration-200 ease-in-out hover:shadow-md
+                               appearance-none [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-90"
                   />
                 </div>
               </>
@@ -127,6 +129,7 @@ export default function FilterBar({
         </div>
       </div>
 
+      {/* Search Button */}
       <div className="md:col-span-3">
         <button
           onClick={onSearch}

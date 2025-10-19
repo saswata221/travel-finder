@@ -38,7 +38,6 @@ export default function Home() {
       const img = new Image();
       img.src = src;
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Auto-advance carousel with Ken Burns effect

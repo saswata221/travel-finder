@@ -145,7 +145,7 @@ export default function Destination() {
   const selectedMonthsText = monthsArrayToText(selectedMonthsFullNames);
 
   // ----- Message templates (functions for better grammar) -----
-  // Each template receives (monthsText) which may be single month or multi-month phrase
+
   const ratingTemplates = {
     5: (monthsText) => {
       const isSingle =
@@ -183,21 +183,17 @@ export default function Destination() {
   };
 
   // ----- Final message selection -----
-  // If user selected dates -> use selectedMonthsText in message (mentions selected months)
-  // Else -> fallback to bestMonthsText (global best months) in tip
+
   let finalMessage = `🌍 Explore ${data.name} — select dates to get tailored advice.`;
   if (computedRating && ratingTemplates[computedRating]) {
-    // user selected dates & we computed rating for those selected months
     const monthsToMention =
       selectedMonths && selectedMonths.length
         ? selectedMonthsText
         : bestMonthsText;
     finalMessage = ratingTemplates[computedRating](monthsToMention);
   } else if (selectedMonths.length && !computedRating) {
-    // selected months exist but no seasonality data for them
     finalMessage = `ℹ️ No seasonality data available for the selected dates. Enjoy your trip to ${data.name}!`;
   } else {
-    // no dates selected -> show a tip about global best months if available
     if (bestMonthsText) {
       finalMessage = `💡 Tip: ${bestMonthsText} ${
         bestMonthsFullNames.length === 1 ? "is" : "are"

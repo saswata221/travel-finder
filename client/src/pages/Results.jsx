@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import { api } from '../services/http';
-import DestinationCard from '../components/DestinationCard';
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import { api } from "../services/http";
+import DestinationCard from "../components/DestinationCard";
 
 function useQueryObj() {
   const { search } = useLocation();
@@ -12,29 +12,47 @@ export default function Results() {
   const q = useQueryObj();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    setLoading(true); setError('');
-    api('/api/destinations/search', { query: q })
+    setLoading(true);
+    setError("");
+    api("/api/destinations/search", { query: q })
       .then(setItems)
-      .catch(e => setError(e.message || 'Error'))
+      .catch((e) => setError(e.message || "Error"))
       .finally(() => setLoading(false));
   }, [q.tags, q.countryId, q.months, q.q]);
 
-  if (loading) return <PageWrap><SkeletonGrid /></PageWrap>;
-  if (error) return <PageWrap><EmptyState title="Something went wrong" subtitle={error} /></PageWrap>;
-  if (!items.length) return <PageWrap><EmptyState title="No results" subtitle="Try different filters." /></PageWrap>;
+  if (loading)
+    return (
+      <PageWrap>
+        <SkeletonGrid />
+      </PageWrap>
+    );
+  if (error)
+    return (
+      <PageWrap>
+        <EmptyState title="Something went wrong" subtitle={error} />
+      </PageWrap>
+    );
+  if (!items.length)
+    return (
+      <PageWrap>
+        <EmptyState title="No results" subtitle="Try different filters." />
+      </PageWrap>
+    );
 
   return (
     <PageWrap>
-      <h1 className="text-3xl font-extrabold mb-8 text-center 
-                     bg-gradient-to-r from-sky-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent">
+      <h1
+        className="text-3xl font-extrabold mb-8 text-center 
+                     bg-gradient-to-r from-sky-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent"
+      >
         Explore Destinations
       </h1>
 
       <div className="grid gap-8 md:grid-cols-3">
-        {items.map(d => (
+        {items.map((d) => (
           <DestinationCard key={d.id} d={d} />
         ))}
       </div>
@@ -68,7 +86,10 @@ function SkeletonGrid() {
   return (
     <div className="grid gap-8 md:grid-cols-3">
       {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="rounded-3xl p-[2px] bg-gradient-to-br from-sky-700 via-emerald-700 to-teal-700 animate-pulse">
+        <div
+          key={i}
+          className="rounded-3xl p-[2px] bg-gradient-to-br from-sky-700 via-emerald-700 to-teal-700 animate-pulse"
+        >
           <div className="rounded-3xl bg-slate-800/70 backdrop-blur-md p-4">
             <div className="h-44 w-full rounded-xl bg-slate-700" />
             <div className="mt-4 h-4 w-2/3 bg-slate-600 rounded" />

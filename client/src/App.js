@@ -1,6 +1,7 @@
 import { Outlet, Link, NavLink } from "react-router-dom";
 import { useState } from "react";
 import AboutModal from "./components/AboutModal";
+import Footer from "./components/Footer";
 
 export default function App() {
   const [aboutOpen, setAboutOpen] = useState(false);
@@ -48,9 +49,7 @@ export default function App() {
         <Outlet />
       </main>
 
-      <footer className="py-10 text-center text-sm text-slate-500">
-        © {new Date().getFullYear()} TravelFinder — built with React & Tailwind
-      </footer>
+      <Footer />
 
       {/* About modal */}
       <AboutModal open={aboutOpen} onClose={() => setAboutOpen(false)} />
