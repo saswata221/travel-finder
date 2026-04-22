@@ -1,5 +1,5 @@
 // client/src/services/http.js
-const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const BASE = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
 function toUserMessage(status, fallback) {
   if (status >= 500) return "Server error. Please try again shortly.";
