@@ -1,5 +1,5 @@
 // client/src/services/http.js
-const BASE = process.env.REACT_APP_API_URL || "http://localhost:5000";
+const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 function toUserMessage(status, fallback) {
   if (status >= 500) return "Server error. Please try again shortly.";
@@ -26,7 +26,7 @@ async function parseErrorResponse(res) {
     payload?.error || payload?.message || payload?.details || "";
   const userMessage = toUserMessage(
     res.status,
-    typeof serverMessage === "string" ? serverMessage : ""
+    typeof serverMessage === "string" ? serverMessage : "",
   );
   const err = new Error(userMessage);
   err.status = res.status;
