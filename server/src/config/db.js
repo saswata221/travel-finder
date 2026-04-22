@@ -17,5 +17,7 @@ function shouldUseSsl() {
 
 export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: shouldUseSsl() ? { rejectUnauthorized: false } : false,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
