@@ -6,9 +6,11 @@ export async function searchDestinationsModel({
   countryId,
   international,
   months,
+  q,
   limit = 20,
   offset = 0,
 }) {
+  const hasMonthFilter = Array.isArray(months) && months.length > 0;
   const params = [];
   let i = 1;
 
@@ -52,11 +54,40 @@ export async function searchDestinationsModel({
     i++;
   }
 
+  if (q) {
+    where.push(`(
+      d.name ILIKE $${i}
+      OR c.name ILIKE $${i}
+      OR COALESCE(d.short_description, '') ILIKE $${i}
+      OR COALESCE(d.about, '') ILIKE $${i}
+    )`);
+    params.push(`%${q}%`);
+    i++;
+  }
+
   if (where.length) sql += ` WHERE ` + where.join(" AND ") + ` `;
+
+  const orderBy = hasMonthFilter
+    ? `
+      ORDER BY
+        COALESCE(AVG(s.suitability), 0) DESC,
+        d.safety_score DESC NULLS LAST,
+        CASE
+          WHEN LOWER(COALESCE(d.visa_type, '')) LIKE '%visa-free%' THEN 1
+          WHEN LOWER(COALESCE(d.visa_type, '')) LIKE '%visa free%' THEN 1
+          WHEN LOWER(COALESCE(d.visa_type, '')) LIKE '%visa-on-arrival%' THEN 2
+          WHEN LOWER(COALESCE(d.visa_type, '')) LIKE '%visa on arrival%' THEN 2
+          ELSE 3
+        END ASC,
+        d.name ASC
+    `
+    : `
+      ORDER BY d.name ASC
+    `;
 
   sql += `
     GROUP BY d.id, c.name
-    ORDER BY season_score DESC NULLS LAST, d.popularity_score DESC NULLS LAST, d.name ASC
+    ${orderBy}
     LIMIT $${i} OFFSET $${i + 1}
   `;
   params.push(Number(limit), Number(offset));

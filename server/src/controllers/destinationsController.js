@@ -11,10 +11,29 @@ function parseCsvInts(csv) {
     .filter((n) => Number.isInteger(n) && n > 0);
 }
 
+function monthsFromDateRange(start, end) {
+  if (!start || !end) return [];
+  const s = new Date(`${start}T00:00:00`);
+  const e = new Date(`${end}T00:00:00`);
+  if (Number.isNaN(s.getTime()) || Number.isNaN(e.getTime()) || e < s) return [];
+
+  const cur = new Date(s);
+  cur.setDate(1);
+  const out = [];
+  while (cur <= e) {
+    out.push(cur.getMonth() + 1);
+    cur.setMonth(cur.getMonth() + 1);
+  }
+  return [...new Set(out)];
+}
+
 export async function searchDestinations(req, res) {
   try {
     const tagIds = parseCsvInts(req.query.tags);
-    const months = parseCsvInts(req.query.months);
+    const queryMonths = parseCsvInts(req.query.months);
+    const rangeMonths = monthsFromDateRange(req.query.start, req.query.end);
+    const months = queryMonths.length ? queryMonths : rangeMonths;
+    const q = String(req.query.q || "").trim();
     const countryId = req.query.countryId
       ? Number(req.query.countryId)
       : undefined;
@@ -30,6 +49,7 @@ export async function searchDestinations(req, res) {
       countryId,
       international,
       months,
+      q,
       limit,
       offset,
     });

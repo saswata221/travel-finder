@@ -4,3 +4,38 @@
 
 html, body, #root { height: 100%; }
 :root { --page-max: 1120px; }
+
+/* Modern date input styling + micro interactions */
+.calendar-input-modern {
+  color-scheme: light;
+}
+
+.calendar-input-modern::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  cursor: pointer;
+}
+
+.calendar-input-modern::-webkit-datetime-edit-day-field,
+.calendar-input-modern::-webkit-datetime-edit-month-field,
+.calendar-input-modern::-webkit-datetime-edit-year-field {
+  border-radius: 6px;
+  transition: background-color 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.calendar-input-modern:hover::-webkit-datetime-edit-day-field,
+.calendar-input-modern:hover::-webkit-datetime-edit-month-field,
+.calendar-input-modern:hover::-webkit-datetime-edit-year-field {
+  background-color: rgba(14, 165, 233, 0.12);
+  color: #0f172a;
+  transform: translateY(-1px);
+}
+
+.calendar-input-modern:focus::-webkit-datetime-edit-day-field,
+.calendar-input-modern:focus::-webkit-datetime-edit-month-field,
+.calendar-input-modern:focus::-webkit-datetime-edit-year-field {
+  background-color: rgba(59, 130, 246, 0.14);
+}
+
+.modern-select-wrap select {
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.95));
+}

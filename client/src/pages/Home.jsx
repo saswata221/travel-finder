@@ -1,5 +1,5 @@
 // client/src/pages/Home.jsx
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../services/http";
 import FilterBar from "../components/FilterBar";
@@ -29,7 +29,10 @@ export default function Home() {
   const nav = useNavigate();
 
   // --- Modern Ken Burns Carousel ---
-  const images = [hero1, hero2, hero3, hero4, hero5, hero6, hero7, hero8];
+  const images = useMemo(
+    () => [hero1, hero2, hero3, hero4, hero5, hero6, hero7, hero8],
+    []
+  );
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // Prefetch to avoid flicker
@@ -38,7 +41,7 @@ export default function Home() {
       const img = new Image();
       img.src = src;
     });
-  }, []);
+  }, [images]);
 
   // Auto-advance carousel with Ken Burns effect
   useEffect(() => {

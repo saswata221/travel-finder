@@ -77,6 +77,7 @@ export default function Destination() {
   const q = useQuery();
 
   const [data, setData] = useState(null);
+  const [photoResults, setPhotoResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -88,6 +89,15 @@ export default function Destination() {
       .catch((e) => setError(e.message || "Error"))
       .finally(() => setLoading(false));
   }, [id]);
+
+  useEffect(() => {
+    if (!data?.name) return;
+
+    const query = [data.name, data.country].filter(Boolean).join(", ");
+    api("/api/photos/search", { query: { query, perPage: 2 } })
+      .then((payload) => setPhotoResults(payload.results || []))
+      .catch(() => setPhotoResults([]));
+  }, [data?.name, data?.country]);
 
   if (loading) {
     return (
@@ -111,10 +121,14 @@ export default function Destination() {
     );
   }
 
-  // ----- Gallery: show only non-cover images -----
-  const galleryImages = Array.isArray(data.images)
-    ? data.images.filter((im) => !im.is_cover)
+  // ----- Gallery: prefer Unsplash photos; fallback to DB images -----
+  const unsplashImages = (photoResults || [])
+    .map((p) => p?.urls?.regular || p?.urls?.small)
+    .filter(Boolean);
+  const dbImages = Array.isArray(data.images)
+    ? data.images.filter((im) => !im.is_cover).map((im) => im.image_url)
     : [];
+  const galleryImages = unsplashImages.length ? unsplashImages : dbImages;
   const hasImages = galleryImages.length > 0;
   const mapsSrc = buildMapEmbedSrc(data);
 
@@ -213,7 +227,7 @@ export default function Destination() {
       />
 
       {/* Media row: images (left) + map (right) */}
-      <section className="grid md:grid-cols-3 gap-4">
+      <section className="grid md:grid-cols-3 gap-4 animate-fade-up">
         {/* Images column */}
         <div
           className={
@@ -224,18 +238,18 @@ export default function Destination() {
         >
           {hasImages ? (
             <div className="grid sm:grid-cols-2 gap-4">
-              {galleryImages.map((im, i) => (
+              {galleryImages.map((url, i) => (
                 <img
                   key={i}
-                  src={im.image_url}
-                  className="rounded-xl w-full h-56 object-cover ring-1 ring-slate-700"
-                  alt=""
+                  src={url}
+                  className="rounded-xl w-full h-44 sm:h-52 md:h-56 object-cover ring-1 ring-slate-700 transition-transform duration-500 hover:scale-[1.03]"
+                  alt={`${data.name} view ${i + 1}`}
                   loading="lazy"
                 />
               ))}
             </div>
           ) : (
-            <div className="rounded-xl w-full h-56 ring-1 ring-slate-700 bg-slate-800/60" />
+            <div className="rounded-xl w-full h-44 sm:h-52 md:h-56 ring-1 ring-slate-700 bg-slate-800/60" />
           )}
 
           {/* Title anchored at the bottom of the image column */}
@@ -244,13 +258,13 @@ export default function Destination() {
             <h1 className="text-3xl font-extrabold tracking-tight text-white">
               {data.name}
             </h1>
-            <p className="text-slate-400">{data.country}</p>
+            <p className="text-base text-slate-400">{data.country}</p>
           </header>
         </div>
 
         {/* Map column */}
         <div className={hasImages ? "md:col-span-1" : "md:col-span-3"}>
-          <div className="h-full min-h-[22rem] rounded-xl overflow-hidden ring-1 ring-slate-700 bg-slate-900/60">
+          <div className="h-full min-h-[20rem] sm:min-h-[22rem] rounded-xl overflow-hidden ring-1 ring-slate-700 bg-slate-900/60">
             <iframe
               title="map"
               src={mapsSrc}
@@ -264,14 +278,18 @@ export default function Destination() {
 
       {/* About */}
       {data.about && (
-        <section className="bg-slate-800/60 backdrop-blur-md rounded-2xl p-5 ring-1 ring-slate-700">
-          <h3 className="font-semibold mb-2 text-slate-200">About</h3>
-          <p className="text-slate-300 leading-relaxed">{data.about}</p>
+        <section className="bg-slate-800/60 backdrop-blur-md rounded-2xl p-4 sm:p-5 ring-1 ring-slate-700 animate-fade-up">
+          <h3 className="font-semibold mb-2 text-slate-200">
+            About
+          </h3>
+          <p className="text-slate-300 leading-relaxed">
+            {data.about}
+          </p>
         </section>
       )}
 
       {/* Quick facts */}
-      <section className="grid sm:grid-cols-3 gap-4">
+      <section className="grid sm:grid-cols-3 gap-3 sm:gap-4 animate-fade-up">
         <Info
           label="Safety"
           value={isFinite(data.safety_score) ? `${data.safety_score}/5` : "—"}
@@ -285,8 +303,10 @@ export default function Destination() {
 
       {/* Tags */}
       {Array.isArray(data.tags) && data.tags.length > 0 && (
-        <section className="bg-slate-800/60 backdrop-blur-md rounded-2xl p-5 ring-1 ring-slate-700">
-          <h3 className="font-semibold mb-2 text-slate-200">Tags</h3>
+        <section className="bg-slate-800/60 backdrop-blur-md rounded-2xl p-4 sm:p-5 ring-1 ring-slate-700 animate-fade-up">
+          <h3 className="font-semibold mb-2 text-slate-200">
+            Tags
+          </h3>
           <div className="flex flex-wrap gap-2">
             {data.tags.map((t) => (
               <span
@@ -302,8 +322,10 @@ export default function Destination() {
 
       {/* Seasonality */}
       {Array.isArray(data.seasonality) && data.seasonality.length > 0 && (
-        <section className="bg-slate-800/60 backdrop-blur-md rounded-2xl p-5 ring-1 ring-slate-700">
-          <h3 className="font-semibold mb-2 text-slate-200">Seasonality</h3>
+        <section className="bg-slate-800/60 backdrop-blur-md rounded-2xl p-4 sm:p-5 ring-1 ring-slate-700 animate-fade-up">
+          <h3 className="font-semibold mb-2 text-slate-200">
+            Seasonality
+          </h3>
           <div className="grid grid-cols-6 gap-2">
             {data.seasonality.map((s) => (
               <div
@@ -346,6 +368,15 @@ function PageShell({ children }) {
       <div className="mx-auto max-w-[var(--page-max)] px-4 pt-28 pb-16 space-y-8">
         {children}
       </div>
+      <style>{`
+        .animate-fade-up {
+          animation: fadeUp 520ms ease both;
+        }
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(12px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </article>
   );
 }

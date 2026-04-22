@@ -18,40 +18,44 @@ export default function DestinationCard({ d }) {
   const to = `/destinations/${d.id}${search}`;
 
   return (
-    <div className="rounded-3xl p-[2px] bg-gradient-to-br from-fuchsia-500 via-cyan-500 to-emerald-500 shadow-lg hover:shadow-2xl transition">
+    <div className="rounded-2xl sm:rounded-3xl p-[2px] bg-gradient-to-br from-fuchsia-500 via-cyan-500 to-emerald-500 shadow-lg hover:shadow-2xl transition duration-300 hover:-translate-y-1">
       <Link
         to={to}
         data-start={start}
         data-end={end}
         data-start-month={startMonth}
-        className="block rounded-3xl overflow-hidden bg-slate-800/90 backdrop-blur-md ring-1 ring-slate-700"
+        className="block rounded-2xl sm:rounded-3xl overflow-hidden bg-slate-800/90 backdrop-blur-md ring-1 ring-slate-700"
       >
         {/* Image */}
         {d.cover_image ? (
           <img
             src={d.cover_image}
             alt={d.name}
-            className="h-44 w-full object-cover"
+            className="h-36 sm:h-40 md:h-44 w-full object-cover transition-transform duration-500 hover:scale-105"
           />
         ) : (
-          <div className="h-44 w-full bg-slate-700/60" />
+          <div className="h-36 sm:h-40 md:h-44 w-full bg-slate-700/60" />
         )}
 
         {/* Content */}
-        <div className="p-4 text-slate-100">
+        <div className="p-3 sm:p-4 text-slate-100">
           <div className="flex items-center justify-between">
-            <h3 className="font-bold text-lg">{d.name}</h3>
+            <h3 className="font-bold text-base sm:text-lg">{d.name}</h3>
             <span className="text-xs px-2 py-1 rounded-full bg-slate-700/60 text-sky-300 ring-1 ring-blue-500">
               {(d.visa_type || "").replace("-", " ") || "—"}
             </span>
           </div>
 
           {/* Country (brighter for visibility) */}
-          <p className="text-md font-medium text-[#80ed99] mt-1">{d.country}</p>
+          <p className="text-sm sm:text-base font-medium text-[#80ed99] mt-1">
+            {d.country}
+          </p>
 
           {/* Description */}
           {d.short_description && (
-            <p className="text-sm mt-2 text-slate-300">{d.short_description}</p>
+            <p className="text-xs sm:text-sm mt-2 text-slate-300">
+              {d.short_description}
+            </p>
           )}
 
           {/* Scores */}
